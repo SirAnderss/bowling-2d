@@ -3,16 +3,12 @@
 </template>
 
 <script>
-import Hello from '../components/Hello.vue'
+import Hello from '../components/homePage/Hello.vue'
+
 export default {
-  name: 'Home',
+  name: 'HomePage',
   components: {
     Hello
-  },
-  data() {
-    return {
-      message: 'Welcome to Your Vue.js App'
-    }
   }
 }
 </script>

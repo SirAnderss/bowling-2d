@@ -9,6 +9,7 @@
     "prettier": "prettier . --write"
   },
   "dependencies": {
+    "firebase": "^9.5.0",
     "normalize.css": "^8.0.1",
     "vue": "^3.2.16",
     "vue-router": "4",

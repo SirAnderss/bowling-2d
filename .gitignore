@@ -6,3 +6,4 @@ dist-ssr
 .vscode
 public/*.png
 src/assets/images/**
+.env
