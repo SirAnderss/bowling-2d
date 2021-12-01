@@ -1,16 +1,14 @@
-scr
+<script>
+export default {
+  name: 'ContainerComponent'
+}
+</script>
 
 <template>
   <div class="container">
     <slot />
   </div>
 </template>
-
-<script>
-export default {
-  name: 'ContainerComponent'
-}
-</script>
 
 <style lang="stylus" scoped>
 .container

@@ -1,9 +1,11 @@
-import Vuex from 'vuex'
+import { createStore } from 'vuex'
 
-const store = new Vuex.Store({
-  state: {
-    players: [],
-    scores: []
+const store = createStore({
+  state() {
+    return {
+      players: [],
+      scores: []
+    }
   },
   mutations: {
     SET_PLAYERS(state, players) {
@@ -13,7 +15,11 @@ const store = new Vuex.Store({
       state.scores = scores
     }
   },
-  actions: {}
+  actions: {
+    registerUsers({ commit }, players) {
+      commit('SET_PLAYERS', players)
+    }
+  }
 })
 
 export default store

@@ -3,12 +3,6 @@ import Container from '../components/Container.vue';
 import Form from '../components/registerPage/Form.vue';
 </script>
 
-<template>
-  <Container>
-    <Form />
-  </Container>
-</template>
-
 <script>
 export default {
   name: 'RegisterPage',
@@ -18,5 +12,11 @@ export default {
   }
 }
 </script>
+
+<template>
+  <Container>
+    <Form />
+  </Container>
+</template>
 
 <style lang="stylus" scoped></style>

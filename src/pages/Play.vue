@@ -1,15 +1,16 @@
-<script setup>
-import Container from '../components/Container.vue';
+<script>
+import Container from '../components/Container.vue'
+
+export default {
+  name: 'PlayPage',
+  components: {
+    Container
+  },
+}
 </script>
 
 <template>
   <Container>Play Game</Container>
 </template>
-
-<script>
-export default {
-  name: 'PlayPage'
-}
-</script>
 
 <style lang="stylus" scoped></style>

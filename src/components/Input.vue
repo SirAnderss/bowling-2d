@@ -33,6 +33,12 @@ defineProps({
 })
 </script>
 
+<script>
+export default {
+  name: 'InputComponent'
+}
+</script>
+
 <template>
   <div>
     <label :for="inputName" v-text="placeholder"></label>
@@ -58,12 +64,6 @@ defineProps({
     />
   </div>
 </template>
-
-<script>
-export default {
-  name: 'InputComponent'
-}
-</script>
 
 <style lang="stylus" scoped>
 label

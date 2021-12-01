@@ -1,7 +1,3 @@
-<template>
-  <Hello />
-</template>
-
 <script>
 import Hello from '../components/homePage/Hello.vue'
 
@@ -12,3 +8,7 @@ export default {
   }
 }
 </script>
+
+<template>
+  <Hello />
+</template>

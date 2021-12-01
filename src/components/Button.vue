@@ -8,15 +8,15 @@ defineProps({
 })
 </script>
 
-<template>
-  <button @click="action" class="btn" :class="bg">{{ label }}</button>
-</template>
-
 <script>
 export default {
   name: 'ButtonComponent'
 }
 </script>
+
+<template>
+  <button @click="action" class="btn" :class="bg">{{ label }}</button>
+</template>
 
 <style lang="stylus" scoped>
 .btn
