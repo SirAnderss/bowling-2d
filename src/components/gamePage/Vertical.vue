@@ -3,8 +3,8 @@
 </template>
 
 <script>
-import { computed, watchEffect } from 'vue'
-import useArrowPosition from '../../hooks/useArrowPosition'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
   name: 'VerticalArrow',
@@ -12,38 +12,67 @@ export default {
     disabled: {
       type: Boolean,
       required: true
-    },
-    setVerticalPosition: {
-      type: Function,
-      required: true
-    },
+    }
   },
 
   setup(props) {
-    const arrowHookPosition = Object.assign({}, useArrowPosition(13))
+    let position = 5
+    let adding = true
+    let interval
 
-    const { arrowPosition, interval } = arrowHookPosition
+    const { dispatch } = useStore()
 
-    const verticalPosition = computed(() => arrowPosition.value)
-    const verticalIntValue = computed(() => {
-      const splited = arrowPosition.value.split('')
-      splited.splice(-2, 2);
+    const verticalPosition = ref('5px')
+    const refPosition = ref(position)
+    const checkDisabled = computed(() => props.disabled)
 
-      const joined = splited.join('')
+    const movement = () => {
+      if (adding) {
+        position = position + 5
+      } else {
+        position = position - 5
+      }
 
-      return parseInt(joined)
+      verticalPosition.value = `${position}px`
+      refPosition.value = position
+    }
+
+    const intervalAction = () => {
+      movement()
+      if (position === 205) {
+        adding = false
+      } else if (position === 5) {
+        adding = true
+      }
+    }
+
+    onMounted(() => interval = setInterval(() =>
+      intervalAction()
+      , 100))
+
+    onBeforeUnmount(() => {
+      clearInterval(interval)
     })
 
-    watchEffect(() => {
-      if (!props.disabled) {
+    watch(checkDisabled, disabled => {
+      if (disabled) {
+        interval = setInterval(() =>
+          intervalAction()
+          , 100)
+      } else {
         clearInterval(interval)
+        position = 5
+        adding = true
 
-        props.setVerticalPosition(verticalPosition.value)
+        dispatch('ball/setBallPosition', {
+          x: 24,
+          y: refPosition.value
+        })
       }
     })
 
     return {
-      verticalPosition
+      verticalPosition, checkDisabled
     }
   }
 }

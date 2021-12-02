@@ -68,14 +68,16 @@ export default {
         return
       }
 
-      const registerPlayers = await registerNewPlayers(players.value)
+      const registeredPlayers = await registerNewPlayers(players.value)
 
-      if (registerPlayers.includes('unsaved')) {
+      if (registeredPlayers.includes('unsaved')) {
         alert('Error registering players, try again')
 
         loading.value = LOADING_STATUS.ERROR
         return
       }
+
+      players.value = registeredPlayers
 
       loading.value = LOADING_STATUS.SUCCESS
     }
@@ -86,7 +88,7 @@ export default {
 
     watchEffect(() => {
       if (loading.value === LOADING_STATUS.SUCCESS) {
-        dispatch('registerUsers', players.value)
+        dispatch('player/registerUsers', players.value)
 
         push({ path: '/game' })
       }

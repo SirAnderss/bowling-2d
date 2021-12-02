@@ -11,17 +11,31 @@ const mockPlayers = [
   {
     name: 'fulano',
     score: 0,
-    player: 'Player 1',
-    id: '1',
+    player: 1,
+    id: 'qwerqwerqwe',
     color: randomColor()
   },
   {
     name: 'sultano com mas nombre',
     score: 0,
-    player: 'Player 2',
-    id: '2',
+    player: 2,
+    id: 'asdfasdfg',
     color: randomColor()
   }
+  // {
+  //   name: 'fulanox',
+  //   score: 0,
+  //   player: 3,
+  //   id: 'yuioyuioyui',
+  //   color: randomColor()
+  // },
+  // {
+  //   name: 'nombre',
+  //   score: 0,
+  //   player: 4,
+  //   id: 'hjkljlhjklhjk',
+  //   color: randomColor()
+  // }
 ]
 
 export default {
@@ -42,15 +56,19 @@ export default {
 
     const half = computed(() => Math.floor(players.value.length / 2))
 
+    const scoreBoard = computed(() =>
+      players.value.filter(
+        player => player.player !== currentPlayer.value.player
+      )
+    )
+
     const changePlayer = turn => {
       const length = players.value.length
 
-      const playerPosition = parseInt(turn.split(' ')[1])
-
-      if (playerPosition === length) {
+      if (turn === length) {
         currentPlayer.value = players.value[0]
       } else {
-        currentPlayer.value = players.value[playerPosition]
+        currentPlayer.value = players.value[turn]
       }
     }
 
@@ -58,6 +76,7 @@ export default {
       currentPlayer,
       players,
       half,
+      scoreBoard,
       changePlayer
     }
   }
@@ -71,17 +90,15 @@ export default {
       <CloseButton />
       <Score
         :currentGame="0"
-        :player="player"
+        :player="currentPlayer"
         :turn="currentPlayer.player"
-        v-for="(player, idx) in players.slice(0, half)"
-        :key="idx"
       />
       <PlayBoard :player="currentPlayer" :changePlayer="changePlayer" />
       <Score
         :currentGame="0"
         :player="player"
         :turn="currentPlayer.player"
-        v-for="(player, idx) in players.slice(half)"
+        v-for="(player, idx) in scoreBoard"
         :key="idx"
       />
     </div>

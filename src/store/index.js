@@ -1,28 +1,17 @@
-import { createStore } from 'vuex'
+import { createLogger, createStore } from 'vuex'
+import ball from './modules/ball'
+import player from './modules/player'
 
-const store = createStore({
-  state() {
-    return {
-      players: [],
-      scores: []
-    }
+const debug = process.env.NODE_ENV !== 'production'
+
+export default createStore({
+  modules: {
+    ball,
+    player
   },
-  mutations: {
-    SET_PLAYERS(state, players) {
-      state.players = players
-    },
-    SET_SCORES(state, scores) {
-      state.scores = scores
-    }
-  },
-  actions: {
-    registerUsers({ commit }, players) {
-      commit('SET_PLAYERS', players)
-    }
-  }
+  strict: debug,
+  plugins: debug ? [createLogger()] : []
 })
-
-export default store
 
 /**
  * Capturar el turno

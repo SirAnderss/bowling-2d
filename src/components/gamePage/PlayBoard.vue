@@ -1,12 +1,14 @@
 <script>
 import { computed, ref } from 'vue'
+import { useStore } from 'vuex'
 import useElementSize from '../../hooks/useElementSize'
+import Ball from './Ball.vue'
 import Bowl from './Bowl.vue'
 import VerticalArrow from './Vertical.vue'
 
 export default {
   name: 'PlayBoard',
-  components: { Bowl, VerticalArrow },
+  components: { Bowl, VerticalArrow, Ball },
   props: {
     player: {
       type: Object,
@@ -19,25 +21,29 @@ export default {
   },
 
   setup(props) {
+    const { state, dispatch } = useStore()
+
     const currentPlayer = computed(() => props.player)
     const color = computed(() => props.player.color)
+    const position = computed(() => state.ball.position)
 
     const boardRef = ref(null)
     const disabled = ref(true)
-    const ballPosition = ref('5px')
-
-    const vPosition = ref(0)
 
     const { widthRef, heightRef } = useElementSize(boardRef)
 
-    const setStartPoint = () => {
-      disabled.value = false
+    const setStartPoint = (value) => {
+      disabled.value = value
+
+      if (value) {
+        dispatch('ball/clearBallPosition')
+      }
     }
 
-    const setVerticalPosition = position => {
-      vPosition.value = position
-      ballPosition.value = position
-      console.log(position)
+    const shootBall = player => {
+      dispatch('ball/setBallShooting', true)
+
+      // props.changePlayer(player)
     }
 
     return {
@@ -47,9 +53,8 @@ export default {
       widthRef,
       heightRef,
       disabled,
-      ballPosition,
-      setVerticalPosition,
-      setStartPoint
+      setStartPoint,
+      shootBall
     }
   }
 }
@@ -60,19 +65,23 @@ export default {
     <span v-if="disabled">Click on board to set ball direction</span>
     <span v-else>Click on Play button to shoot</span>
     <div class="game-board">
-      <div class="board" :class="disabled && 'pointer'" ref="boardRef" @click="setStartPoint">
-        <VerticalArrow :disabled="disabled" :setVerticalPosition="setVerticalPosition" />
+      <div
+        class="board"
+        :class="disabled && 'pointer'"
+        ref="boardRef"
+        @click="setStartPoint(false)"
+      >
+        <VerticalArrow :disabled="disabled" />
         <Bowl v-for="(bowl, idx) in [...Array(10)]" :key="idx" :index="idx" />
-        <div class="ball" v-if="!disabled" />
+        <Ball :disabled="disabled" :color="color" :setStartPoint="setStartPoint" />
       </div>
-      <button @click="changePlayer(currentPlayer.player)" :disabled="disabled">Play</button>
+      <button @click="shootBall(currentPlayer.player)" :disabled="disabled">Play</button>
     </div>
   </div>
 </template>
 
 <style lang="stylus" scoped>
 play-color = v-bind(color)
-position-ball = v-bind(ballPosition)
 
 .game-container
   width: 100%
@@ -98,17 +107,7 @@ position-ball = v-bind(ballPosition)
 
     .board
       position: relative
-      background-color: tomato
-
-      .ball
-        position: absolute
-        width: 3rem
-        height: 3rem
-        border-radius: 50%
-        background-color: play-color
-        top: position-ball
-        right: 1.5rem
-        transform: translateY(-20%)
+      background: tomato
 
     button
       background-color: play-color

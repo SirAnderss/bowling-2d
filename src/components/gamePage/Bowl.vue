@@ -1,5 +1,5 @@
 <script>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import bowlPosition from '../../resources/bowlPosition'
 
 export default {
@@ -15,16 +15,24 @@ export default {
     const top = computed(() => `${bowlPosition[props.index].top}px`)
     const left = computed(() => `${bowlPosition[props.index].left}px`)
 
+    const bowlRef = ref(null)
+
+    watch(bowlRef, bowlRef => {
+      if (props.index === 0) console.log(bowlRef.offsetLeft)
+      // console.log(props.index, bowlRef.offsetTop, bowlRef.offsetLeft)
+    })
+
     return {
       top,
-      left
+      left,
+      bowlRef
     }
   }
 }
 </script>
 
 <template>
-  <div class="bowl"></div>
+  <div class="bowl" ref="bowlRef">{{ index }}</div>
 </template>
 
 <style lang="stylus" scoped>

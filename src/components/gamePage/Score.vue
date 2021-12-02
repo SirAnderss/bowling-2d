@@ -17,7 +17,7 @@ export default {
       required: true
     },
     turn: {
-      type: String,
+      type: Number,
       required: true
     }
   },
