@@ -23,3 +23,10 @@ const store = createStore({
 })
 
 export default store
+
+/**
+ * Capturar el turno
+ * Si es chuza hay que puntuar dos casillas mas
+ * Si es par hay que puntuar una casilla mas
+ * Se cuentan los bolos tumbados
+ */

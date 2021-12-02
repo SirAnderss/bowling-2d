@@ -1,6 +1,6 @@
 <script setup>
-import Container from '../components/Container.vue';
-import Form from '../components/registerPage/Form.vue';
+import Container from '../components/Container.vue'
+import Form from '../components/registerPage/Form.vue'
 </script>
 
 <script>

@@ -1,8 +1,6 @@
 <script>
-import { ref } from 'vue';
-import invertHex from '../../resources/invertHex';
-import randomColor from '../../resources/randomColor';
-import ScoreItem from './ScoreItem.vue';
+import { computed } from 'vue'
+import ScoreItem from './ScoreItem.vue'
 
 export default {
   name: 'ScoreComponent',
@@ -17,27 +15,37 @@ export default {
     currentGame: {
       type: Number,
       required: true
+    },
+    turn: {
+      type: String,
+      required: true
     }
   },
 
-  setup() {
-    const color = ref(randomColor())
+  setup(props) {
+    const currentTurn = computed(() => props.turn)
+    const color = computed(() => props.player.color)
 
     return {
       color,
-      invertHex
+      currentTurn
     }
-  },
+  }
 }
 </script>
 
 <template>
-  <div class="score">
+  <div class="score" :class="player.player !== currentTurn && 'disabled'">
     <h2>SCORE</h2>
     <div class="player">
       <span>{{ player.name }}</span>
     </div>
-    <ScoreItem :game="currentGame" :index="idx" v-for="(item, idx) in [...Array(10)]" :key="idx" />
+    <ScoreItem
+      :game="currentGame"
+      :index="idx"
+      v-for="(item, idx) in [...Array(10)]"
+      :key="idx"
+    />
   </div>
 </template>
 
@@ -47,8 +55,7 @@ prop-color= v-bind(color)
 .score
   width: 100%
   height: 5rem
-  margin-top: 50px
-  margin-bottom: 10px
+  margin: 40px 0
   display: flex
   align-items: center
   position: relative
@@ -75,4 +82,13 @@ prop-color= v-bind(color)
 
     span
       filter: saturate(0) grayscale(1) brightness(.7) contrast(1000%) invert(1)
+
+.disabled
+  opacity: 0.5
+
+  .player
+    background: #eaeaea !important
+
+    span
+      filter: invert(0)
 </style>

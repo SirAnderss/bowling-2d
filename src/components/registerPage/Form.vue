@@ -3,6 +3,7 @@ import { ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { registerNewPlayers } from '../../firebase/firestore'
+import randomColor from '../../resources/randomColor'
 import Button from '../Button.vue'
 import Input from '../Input.vue'
 
@@ -29,7 +30,7 @@ export default {
 
     const loading = ref(0)
 
-    const onChange = (e) => {
+    const onChange = e => {
       const { name, value } = e.target
 
       if (name === 'numPlayers') {
@@ -52,7 +53,8 @@ export default {
       players.value[player - 1] = {
         player: parseInt(player),
         name: value,
-        score: 0
+        score: 0,
+        color: randomColor()
       }
     }
 
@@ -143,8 +145,8 @@ export default {
             ? 'success'
             : loading === LOADING_STATUS.LOADING ||
               loading === LOADING_STATUS.SUCCESS
-              ? 'disabled'
-              : 'danger'
+            ? 'disabled'
+            : 'danger'
         "
         v-if="players.length === numPlayers"
       />

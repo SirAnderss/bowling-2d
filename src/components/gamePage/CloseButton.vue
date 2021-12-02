@@ -23,7 +23,7 @@ export default {
       confirmation,
       setConfirmation,
       setRedirect
-    };
+    }
   }
 }
 </script>
@@ -38,42 +38,42 @@ export default {
 </template>
 
 <style lang="stylus" scoped>
-  .close
-    position: fixed
-    top: 30px
-    right: 30px
-    width: 25px
-    height: 4px
-    transform: rotate(45deg)
+.close
+  position: fixed
+  top: 30px
+  right: 30px
+  width: 25px
+  height: 4px
+  transform: rotate(45deg)
+  background: #000
+  cursor: pointer
+
+  &:before
+    content: ''
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
     background: #000
+    transform: rotate(90deg)
+
+.confirmation-dialog
+  display flex
+  gap: 5px
+  position: fixed
+  top: 7px
+  right: 4rem
+  font-weight: 600
+  color: #252525
+
+  button:first-of-type
+    color: #386C65
+
+  button:last-of-type
+    color: #CB2128
+
+  button
+    all: unset
     cursor: pointer
-
-    &:before
-      content: ''
-      position: absolute
-      top: 0
-      left: 0
-      width: 100%
-      height: 100%
-      background: #000
-      transform: rotate(90deg)
-
-  .confirmation-dialog
-    display flex
-    gap: 5px
-    position: fixed
-    top: 7px
-    right: 4rem
-    font-weight: 600
-    color: #252525
-
-    button:first-of-type
-      color: #386C65
-
-    button:last-of-type
-      color: #CB2128
-
-    button
-      all: unset
-      cursor: pointer
 </style>

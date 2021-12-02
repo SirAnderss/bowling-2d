@@ -25,7 +25,13 @@ export default {
   <Container>
     <div class="hello">
       <h1>BOWLING 2D</h1>
-      <Button label="New Game" :action="onClick" :disabled="false" :loading="false" bg="success" />
+      <Button
+        label="New Game"
+        :action="onClick"
+        :disabled="false"
+        :loading="false"
+        bg="success"
+      />
     </div>
   </Container>
 </template>
