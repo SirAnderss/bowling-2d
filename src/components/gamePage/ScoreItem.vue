@@ -1,4 +1,6 @@
 <script>
+import { computed } from 'vue'
+
 export default {
   name: 'ScoreItem',
   props: {
@@ -9,7 +11,89 @@ export default {
     index: {
       type: Number,
       required: true
-    }
+    },
+    score: {
+      type: [Array, Number],
+      required: true
+    },
+    scoreBoard: {
+      type: Array,
+      required: true
+    },
+  },
+
+  setup(props) {
+    const scoreBoard = computed(() => {
+      if (props.scoreBoard) {
+
+        return props.scoreBoard.slice(0, props.index + 1)
+      }
+
+      return null
+    })
+
+    const number = computed(() => {
+      const score = props.score
+
+      if (score.length === 1) {
+        return ''
+      }
+
+      return score[0]
+    })
+
+    const scuare = computed(() => {
+      const score = props.score
+
+      if (score.length === 1) {
+        return 'X'
+      }
+
+      if (score[0] + score[1] === 10) {
+        return '/'
+      }
+
+      return score[1]
+    })
+
+    const total = computed(() => {
+      if (scoreBoard.value) {
+        let total = 0;
+
+        for (let i = 0; i < scoreBoard.value.length; i++) {
+          if (scoreBoard.value[i].length === 1) {
+
+            if (scoreBoard.value[i + 1]) {
+              total += scoreBoard.value[i][0] + scoreBoard.value[i + 1][0] + scoreBoard.value[i + 1][1];
+            } else {
+              total += scoreBoard.value[i][0]
+            }
+
+            continue;
+          }
+
+          const sum = scoreBoard.value[i][0] + scoreBoard.value[i][1];
+
+          if (sum === 10) {
+            if (scoreBoard.value[i + 1]) {
+              total += sum + scoreBoard.value[i + 1][0];
+            } else {
+              total += sum;
+            }
+
+            continue;
+          }
+
+          total += sum;
+        }
+
+        return total
+      }
+
+      return null
+    })
+
+    return { number, scuare, total }
   }
 }
 </script>
@@ -20,12 +104,13 @@ export default {
       <td colspan="3" v-text="index + 1"></td>
     </tr>
     <tr>
-      <td></td>
-      <td class="scuare"></td>
+      <td>{{ number }}</td>
+      <td class="scuare">{{ scuare }}</td>
       <td class="scuare" v-if="index === 9"></td>
     </tr>
     <tr>
-      <td colspan="3"></td>
+      <td colspan="3" v-if="!scuare"></td>
+      <td colspan="3" v-else>{{ total || '' }}</td>
     </tr>
   </table>
 </template>

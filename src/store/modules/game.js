@@ -17,19 +17,19 @@ const state = () => {
     strike: false,
     bowls: [...Array(10).keys()],
     scoreBoard: [
-      // {
-      //   player: 1,
-      //   games: [[3, 7], [7, 1], [10], [3, 6]]
-      // },
-      // {
-      //   player: 2,
-      //   games: [
-      //     [3, 5],
-      //     [7, 3],
-      //     [8, 2],
-      //     [6, 3]
-      //   ]
-      // }
+      {
+        player: 1,
+        games: [[3, 7], [7, 1], [10], [4, 6]]
+      },
+      {
+        player: 2,
+        games: [
+          [3, 5],
+          [7, 3],
+          [8, 2],
+          [6, 3]
+        ]
+      }
     ],
     tempGameScores: {},
     turn: 1,

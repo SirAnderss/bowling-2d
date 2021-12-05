@@ -1,5 +1,6 @@
 <script>
 import { computed } from 'vue'
+import { useStore } from 'vuex'
 import ScoreItem from './ScoreItem.vue'
 
 export default {
@@ -23,12 +24,17 @@ export default {
   },
 
   setup(props) {
+    const { state } = useStore()
+
     const currentTurn = computed(() => props.turn)
     const color = computed(() => props.player.color)
 
+    const scoreBoard = computed(() => state.game.scoreBoard.find(score => score.player === props.player.player))
+
     return {
       color,
-      currentTurn
+      currentTurn,
+      scoreBoard
     }
   }
 }
@@ -43,6 +49,8 @@ export default {
     <ScoreItem
       :game="currentGame"
       :index="idx"
+      :score="scoreBoard.games[idx] || []"
+      :scoreBoard="scoreBoard.games"
       v-for="(item, idx) in [...Array(10)]"
       :key="idx"
     />
