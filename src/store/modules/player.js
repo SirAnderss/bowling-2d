@@ -2,13 +2,18 @@
 const state = () => {
   return {
     players: [],
-    scores: []
+    scores: [],
+    player: {}
   }
 }
 
 const actions = {
   registerUsers({ commit }, players) {
     commit('SET_PLAYERS', players)
+  },
+
+  setCurrentPlayer({ commit }, player) {
+    commit('SET_CURRENT_PLAYER', player)
   }
 }
 
@@ -20,6 +25,10 @@ const mutations = {
 
   SET_SCORES(state, scores) {
     state.scores = scores
+  },
+
+  SET_CURRENT_PLAYER(state, player) {
+    state.player = player
   }
 }
 

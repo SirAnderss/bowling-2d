@@ -3,8 +3,8 @@
 </template>
 
 <script>
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import { useStore } from 'vuex'
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: 'BallComponent',
@@ -12,11 +12,6 @@ export default {
     disabled: {
       type: Boolean,
       default: true,
-      required: true
-    },
-    color: {
-      type: String,
-      default: '#fff',
       required: true
     },
     setStartPoint: {
@@ -34,19 +29,26 @@ export default {
 
     const offsetY = computed(() => `${state.ball.position.y}px`)
     const shootBall = computed(() => state.ball.shooting)
+    const currentPlayer = computed(() => state.player.player)
+    const color = computed(() => currentPlayer.value.color)
 
     const hPosition = ref('24px')
 
+    const bowlsStrike = position => {
+      dispatch('game/setBowls', position)
+    }
+
     const increment = () => {
-      position = position * 1.09
+      position = position * 1.08
 
       hPosition.value = `${position}px`
 
-      if (refBall.value.offsetLeft <= 185 && refBall.value.offsetLeft >= 180) {
-        console.log(refBall.value.offsetLeft)
+      if (refBall.value.offsetLeft <= 262 && refBall.value.offsetLeft >= 190) {
+        bowlsStrike(refBall.value.offsetTop)
       }
 
       if (position > 730) {
+        clearInterval(addInterval)
         dispatch('ball/setBallShooting', false)
       }
     }
@@ -57,7 +59,7 @@ export default {
 
     watch(shootBall, shootBall => {
       if (shootBall) {
-        addInterval = setInterval(increment, 15)
+        addInterval = setInterval(increment, 15) // 15
       } else {
         clearInterval(addInterval)
         props.setStartPoint(true)
@@ -66,7 +68,7 @@ export default {
       }
     })
 
-    return { offsetY, refBall, hPosition }
+    return { offsetY, refBall, hPosition, currentPlayer, color }
   }
 }
 </script>
@@ -80,7 +82,7 @@ h-position = v-bind(hPosition)
   position: absolute
   width: 48px
   height: 48px
-  border-radius: 50%
+  // border-radius: 50%
   background-color: play-color
   top: y-position
   right: h-position

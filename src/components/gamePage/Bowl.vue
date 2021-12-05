@@ -1,5 +1,6 @@
 <script>
 import { computed, ref, watch } from 'vue'
+import { useStore } from 'vuex'
 import bowlPosition from '../../resources/bowlPosition'
 
 export default {
@@ -12,19 +13,23 @@ export default {
   },
 
   setup(props) {
+    const { state } = useStore()
+
     const top = computed(() => `${bowlPosition[props.index].top}px`)
     const left = computed(() => `${bowlPosition[props.index].left}px`)
+    const activeBowls = computed(() => state.game.bowls)
 
     const bowlRef = ref(null)
 
     watch(bowlRef, bowlRef => {
-      if (props.index === 0) console.log(bowlRef.offsetLeft)
+      if (props.index === 0) console.log(bowlRef.offsetTop)
       // console.log(props.index, bowlRef.offsetTop, bowlRef.offsetLeft)
     })
 
     return {
       top,
       left,
+      activeBowls,
       bowlRef
     }
   }
@@ -32,7 +37,7 @@ export default {
 </script>
 
 <template>
-  <div class="bowl" ref="bowlRef">{{ index }}</div>
+  <div class="bowl" ref="bowlRef" :class="!activeBowls.includes(index) && 'red'">{{ index }}</div>
 </template>
 
 <style lang="stylus" scoped>
@@ -59,4 +64,7 @@ leftPosition = v-bind(left)
     top: 50%
     left: 50%
     transform: translate(-50%, -50%)
+
+.red
+  background-color: #f00
 </style>

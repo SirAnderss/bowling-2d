@@ -1,5 +1,6 @@
 <script>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import Container from '../components/Container.vue'
 import CloseButton from '../components/gamePage/CloseButton.vue'
@@ -48,11 +49,16 @@ export default {
   },
 
   setup() {
-    const { state } = useStore()
+    const { dispatch, state } = useStore()
+    const { replace } = useRouter()
 
     const players = computed(() => mockPlayers)
+    const turn = computed(() => state.game.turn)
+    const game = computed(() => state.game.game)
+    const strike = computed(() => state.game.strike)
+    const loading = ref(true)
 
-    const currentPlayer = ref(players.value[0])
+    const currentPlayer = computed(() => state.player.player)
 
     const half = computed(() => Math.floor(players.value.length / 2))
 
@@ -65,18 +71,74 @@ export default {
     const changePlayer = turn => {
       const length = players.value.length
 
+      dispatch('game/setTurn', 1)
+
       if (turn === length) {
-        currentPlayer.value = players.value[0]
+        dispatch('player/setCurrentPlayer', players.value[0])
+        dispatch('game/nextGame')
       } else {
-        currentPlayer.value = players.value[turn]
+        dispatch('player/setCurrentPlayer', players.value[turn])
       }
     }
+
+    onMounted(() => {
+      if (!players.value.length) {
+        replace({ path: '/register' })
+        return
+      }
+
+      dispatch('player/setCurrentPlayer', players.value[0])
+
+      setTimeout(() => {
+        loading.value = false
+      }, 1000);
+
+    })
+
+    watch([strike, turn, game], ([strike, turn, game], [prevStrike, prevTurn, prevGame]) => {
+      if (strike) {
+        dispatch('game/setScore', currentPlayer.value.player)
+        dispatch('game/setStandBy', true)
+
+        setTimeout(() => {
+          changePlayer(currentPlayer.value.player)
+          dispatch('game/setStrike', false)
+          dispatch('game/resetBowls')
+          dispatch('game/setStandBy', false)
+
+        }, 2000);
+
+        return
+      }
+
+      if (game < 10) {
+        if (turn === 3) {
+          dispatch('game/setStandBy', true)
+          dispatch('game/setScore', currentPlayer.value.player)
+          // animation of change player
+          setTimeout(() => {
+            dispatch('game/setStandBy', false)
+            dispatch('game/resetBowls')
+            changePlayer(currentPlayer.value.player)
+          }, 2000);
+          return
+        }
+      }
+
+      if (game === 10) {
+        if (turn === 4) {
+          console.log('end player game')
+          return
+        }
+      }
+    })
 
     return {
       currentPlayer,
       players,
       half,
       scoreBoard,
+      loading,
       changePlayer
     }
   }
@@ -85,14 +147,11 @@ export default {
 
 <template>
   <Container>
-    <div class="game-page">
+    <div v-if="loading">Loadig...</div>
+    <div class="game-page" v-else>
       <h1>BOWLING 2D</h1>
       <CloseButton />
-      <Score
-        :currentGame="0"
-        :player="currentPlayer"
-        :turn="currentPlayer.player"
-      />
+      <Score :currentGame="0" :player="currentPlayer" :turn="currentPlayer.player" />
       <PlayBoard :player="currentPlayer" :changePlayer="changePlayer" />
       <Score
         :currentGame="0"

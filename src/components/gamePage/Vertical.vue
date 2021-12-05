@@ -1,5 +1,5 @@
 <template>
-  <div class="v-arrow" />
+  <div class="v-arrow" v-if="!invisible" />
 </template>
 
 <script>
@@ -16,15 +16,18 @@ export default {
   },
 
   setup(props) {
-    let position = 5
+    let position = -20
     let adding = true
     let interval
+    const timer = 100
 
-    const { dispatch } = useStore()
+    const { state, dispatch } = useStore()
 
     const verticalPosition = ref('5px')
     const refPosition = ref(position)
     const checkDisabled = computed(() => props.disabled)
+
+    const invisible = computed(() => state.game.standBy)
 
     const movement = () => {
       if (adding) {
@@ -39,16 +42,16 @@ export default {
 
     const intervalAction = () => {
       movement()
-      if (position === 205) {
+      if (position === 230) {
         adding = false
-      } else if (position === 5) {
+      } else if (position === -10) {
         adding = true
       }
     }
 
     onMounted(() => interval = setInterval(() =>
       intervalAction()
-      , 100))
+      , timer))
 
     onBeforeUnmount(() => {
       clearInterval(interval)
@@ -58,7 +61,7 @@ export default {
       if (disabled) {
         interval = setInterval(() =>
           intervalAction()
-          , 100)
+          , timer)
       } else {
         clearInterval(interval)
         position = 5
@@ -72,7 +75,7 @@ export default {
     })
 
     return {
-      verticalPosition, checkDisabled
+      verticalPosition, checkDisabled, invisible
     }
   }
 }

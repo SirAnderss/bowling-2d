@@ -25,7 +25,7 @@ export default {
 
     const currentPlayer = computed(() => props.player)
     const color = computed(() => props.player.color)
-    const position = computed(() => state.ball.position)
+    const strike = computed(() => state.game.strike)
 
     const boardRef = ref(null)
     const disabled = ref(true)
@@ -53,6 +53,7 @@ export default {
       widthRef,
       heightRef,
       disabled,
+      strike,
       setStartPoint,
       shootBall
     }
@@ -67,13 +68,22 @@ export default {
     <div class="game-board">
       <div
         class="board"
+        id="board"
         :class="disabled && 'pointer'"
         ref="boardRef"
         @click="setStartPoint(false)"
       >
         <VerticalArrow :disabled="disabled" />
-        <Bowl v-for="(bowl, idx) in [...Array(10)]" :key="idx" :index="idx" />
-        <Ball :disabled="disabled" :color="color" :setStartPoint="setStartPoint" />
+        <img
+          :src="'../../assets/images/strike.gif'"
+          class="strike"
+          alt="Strike"
+          width="240"
+          height="240"
+          v-if="strike"
+        />
+        <Bowl v-else v-for="(bowl, idx) in [...Array(10)]" :key="idx" :index="idx" />
+        <Ball :disabled="disabled" :setStartPoint="setStartPoint" />
       </div>
       <button @click="shootBall(currentPlayer.player)" :disabled="disabled">Play</button>
     </div>
@@ -121,6 +131,13 @@ play-color = v-bind(color)
       &:disabled
         cursor: not-allowed
         opacity: 0.5
+
+    .strike
+      position: absolute
+      top: 0
+      left: 0
+      z-index: 12
+
 
 .pointer
   cursor: pointer
