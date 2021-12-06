@@ -2,7 +2,6 @@
 import { ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { registerNewPlayers } from '../../firebase/firestore'
 import randomColor from '../../resources/randomColor'
 import Button from '../Button.vue'
 import Input from '../Input.vue'
@@ -68,16 +67,16 @@ export default {
         return
       }
 
-      const registeredPlayers = await registerNewPlayers(players.value)
+      // const registeredPlayers = await registerNewPlayers(players.value)
 
-      if (registeredPlayers.includes('unsaved')) {
-        alert('Error registering players, try again')
+      // if (registeredPlayers.includes('unsaved')) {
+      //   alert('Error registering players, try again')
 
-        loading.value = LOADING_STATUS.ERROR
-        return
-      }
+      //   loading.value = LOADING_STATUS.ERROR
+      //   return
+      // }
 
-      players.value = registeredPlayers
+      // players.value = registeredPlayers
 
       loading.value = LOADING_STATUS.SUCCESS
     }
@@ -147,8 +146,8 @@ export default {
             ? 'success'
             : loading === LOADING_STATUS.LOADING ||
               loading === LOADING_STATUS.SUCCESS
-            ? 'disabled'
-            : 'danger'
+              ? 'disabled'
+              : 'danger'
         "
         v-if="players.length === numPlayers"
       />
