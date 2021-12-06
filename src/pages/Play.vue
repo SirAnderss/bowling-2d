@@ -54,11 +54,17 @@ export default {
     const { dispatch, state } = useStore()
     const { replace } = useRouter()
 
-    const players = computed(() => mockPlayers) // state.player.players
+    const players = computed(() => state.player.players)
     const turn = computed(() => state.game.turn)
     const game = computed(() => state.game.game)
     const strike = computed(() => state.game.strike)
-    const acumulated = computed(() => state.game.acumulatedScore)
+    const acumulated = computed(() => {
+      if (state.game.acumulatedScore.length) {
+        return state.game.acumulatedScore
+      }
+
+      return null
+    })
     const gameOver = computed(() => state.game.gameOver)
     const loading = ref(true)
     const winner = ref(null)
@@ -101,7 +107,13 @@ export default {
     }
 
     const restartGame = () => {
-      replace({ path: '/game' })
+      loading.value = true
+
+      dispatch('game/clearAllStates')
+
+      setTimeout(() => {
+        loading.value = false
+      }, 1000);
     }
 
     const exit = () => {
@@ -116,69 +128,49 @@ export default {
 
       dispatch('player/setCurrentPlayer', players.value[0])
 
-      if (gameOver.value) {
-        const results = acumulated.value.map(player => {
+      setTimeout(() => {
+        loading.value = false
+      }, 1000);
+    })
+
+    watch([strike, turn], ([strike, turn]) => {
+      const checkGameScores = acumulated.value ? acumulated.value.map(score => score.score.length) : []
+
+      const lastTurn = checkGameScores.some(score => score === 9)
+      const finish = checkGameScores.length ? checkGameScores.every(score => score === 10) : false
+
+      if (finish) {
+        dispatch('game/setGameOver', true)
+
+        const results = acumulated.value ? acumulated.value.map(player => {
           const score = player.score.reduce((a, b) => (a > b ? a : b));
 
           const dataPlayer = players.value.find(p => p.player === player.player);
           dataPlayer.score = score;
 
           return { player: dataPlayer };
-        });
-
-        winner.value = results.sort((a, b) => b.player.score - a.player.score)[0].player
-      }
-
-      setTimeout(() => {
-        loading.value = false
-      }, 1000);
-
-    })
-
-    watch([strike, turn, game, acumulated, players], ([strike, turn, game, acumulated, players]) => {
-      if (!players.length) {
-        replace({ path: '/register' })
-        return
-      }
-      const checkGameScores = acumulated ? acumulated.map(score => score.score.length) : []
-
-      const gamePlay = checkGameScores.every(score => score < 10)
-      const finish = checkGameScores.every(score => score === 10)
-
-      if (finish) {
-        dispatch('game/setGameOver', true)
-
-        const results = acumulated.map(player => {
-          const score = player.score.reduce((a, b) => (a > b ? a : b));
-
-          const dataPlayer = players.find(p => p.player === player.player);
-          dataPlayer.score = score;
-
-          return { player: dataPlayer };
-        });
+        }) : [];
 
         winner.value = results.sort((a, b) => b.player.score - a.player.score)[0]?.player
+
+        return
       }
 
-      if (gamePlay) {
-        if (strike) {
-          dispatchActions()
-          return
-        }
-
-        if (turn === 3) {
-          dispatchActions()
-          return
-        }
-      } else {
-        if (strike) {
-          dispatchActions()
-          return
-        }
+      if (lastTurn) {
         if (turn === 4) {
           dispatchActions()
           return
         }
+      }
+
+      if (strike) {
+        dispatchActions()
+        return
+      }
+
+      if (turn === 3) {
+        dispatchActions()
+        return
       }
     })
 
@@ -212,7 +204,7 @@ export default {
         :turn="currentPlayer.player"
         :winner="winner"
       />
-      <PlayBoard :player="currentPlayer" :changePlayer="changePlayer" v-if="!gameOver" />
+      <PlayBoard :player="currentPlayer" v-if="!gameOver" />
       <Score
         :currentGame="0"
         :player="player"
@@ -221,7 +213,7 @@ export default {
         v-for="(player, idx) in scoreBoard"
         :key="idx"
       />
-      <div class="restart">
+      <div class="restart" v-if="winner">
         <Button
           label="Restart game"
           :action="restartGame"

@@ -1,5 +1,5 @@
 <template>
-  <div class="ball" ref="refBall" v-if="!disabled">{{ hPosition }}</div>
+  <div class="ball" ref="refBall" v-if="!disabled"></div>
 </template>
 
 <script>
@@ -82,7 +82,7 @@ h-position = v-bind(hPosition)
   position: absolute
   width: 48px
   height: 48px
-  // border-radius: 50%
+  border-radius: 50%
   background-color: play-color
   top: y-position
   right: h-position

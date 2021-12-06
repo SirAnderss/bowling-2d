@@ -33,7 +33,7 @@ export default {
 
     const color = computed(() => props.player.color)
 
-    const winningPlayer = computed(() => props.winner)
+    const winningPlayer = computed(() => props.winner || null)
 
     const scoreBoard = computed(() => {
       if (state.game.scoreBoard.length) {
@@ -81,7 +81,7 @@ export default {
       :score="scoreBoard ? scoreBoard.games[idx] : []"
       :total="acumulated ? acumulated.score[idx] : 0"
       :scoreBoard="scoreBoard ? scoreBoard.games : []"
-      :win="winningPlayer.player === acumulated.player"
+      :win="winningPlayer ? winningPlayer.player === acumulated.player : false"
       v-for="(item, idx) in [...Array(10)]"
       :key="idx"
     />

@@ -17,25 +17,13 @@ const state = () => {
   return {
     strike: false,
     bowls: [...Array(10).keys()],
-    scoreBoard: [
-      {
-        player: 1,
-        games: [[10], [10], [10], [10], [10], [10], [10], [10], [10], [8, 0]]
-      },
-      {
-        player: 2,
-        games: [[10], [10], [10], [10], [10], [10], [10], [10], [10], [10]]
-      }
-    ],
-    acumulatedScore: [
-      { player: 1, score: [30, 60, 90, 120, 150, 180, 210, 240, 270, 292] },
-      { player: 2, score: [30, 60, 90, 120, 150, 180, 210, 240, 270, 300] }
-    ],
+    scoreBoard: [],
+    acumulatedScore: [],
     tempGameScores: [],
     turn: 1,
     standBy: false,
     game: 1,
-    gameOver: true
+    gameOver: false
   }
 }
 

@@ -13,10 +13,6 @@ export default {
     player: {
       type: Object,
       required: true
-    },
-    changePlayer: {
-      type: Function,
-      required: true
     }
   },
 
@@ -42,8 +38,6 @@ export default {
 
     const shootBall = player => {
       dispatch('ball/setBallShooting', true)
-
-      // props.changePlayer(player)
     }
 
     return {
