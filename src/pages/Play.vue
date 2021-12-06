@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import Button from '../components/Button.vue'
 import Container from '../components/Container.vue'
 import CloseButton from '../components/gamePage/CloseButton.vue'
 import PlayBoard from '../components/gamePage/PlayBoard.vue'
@@ -17,7 +18,7 @@ const mockPlayers = [
     color: randomColor()
   },
   {
-    name: 'sultano com mas nombre',
+    name: 'nombre',
     score: 0,
     player: 2,
     id: 'asdfasdfg',
@@ -45,7 +46,8 @@ export default {
     Container,
     Score,
     CloseButton,
-    PlayBoard
+    PlayBoard,
+    Button
   },
 
   setup() {
@@ -56,7 +58,10 @@ export default {
     const turn = computed(() => state.game.turn)
     const game = computed(() => state.game.game)
     const strike = computed(() => state.game.strike)
+    const acumulated = computed(() => state.game.acumulatedScore)
+    const gameOver = computed(() => state.game.gameOver)
     const loading = ref(true)
+    const winner = ref(null)
 
     const currentPlayer = computed(() => state.player.player)
 
@@ -81,6 +86,28 @@ export default {
       }
     }
 
+    const dispatchActions = () => {
+      dispatch('game/setStandBy', true)
+      dispatch('game/setScore', currentPlayer.value.player)
+
+      // Change player animation
+
+      setTimeout(() => {
+        dispatch('game/setStandBy', false)
+        dispatch('game/setStrike', false)
+        dispatch('game/resetBowls')
+        changePlayer(currentPlayer.value.player)
+      }, 2000);
+    }
+
+    const restartGame = () => {
+      replace({ path: '/game' })
+    }
+
+    const exit = () => {
+      replace({ path: '/register' })
+    }
+
     onMounted(() => {
       if (!players.value.length) {
         replace({ path: '/register' })
@@ -89,45 +116,67 @@ export default {
 
       dispatch('player/setCurrentPlayer', players.value[0])
 
+      if (gameOver.value) {
+        const results = acumulated.value.map(player => {
+          const score = player.score.reduce((a, b) => (a > b ? a : b));
+
+          const dataPlayer = players.value.find(p => p.player === player.player);
+          dataPlayer.score = score;
+
+          return { player: dataPlayer };
+        });
+
+        winner.value = results.sort((a, b) => b.player.score - a.player.score)[0].player
+      }
+
       setTimeout(() => {
         loading.value = false
       }, 1000);
 
     })
 
-    watch([strike, turn, game], ([strike, turn, game], [prevStrike, prevTurn, prevGame]) => {
-      if (strike) {
-        dispatch('game/setScore', currentPlayer.value.player)
-        dispatch('game/setStandBy', true)
-
-        setTimeout(() => {
-          changePlayer(currentPlayer.value.player)
-          dispatch('game/setStrike', false)
-          dispatch('game/resetBowls')
-          dispatch('game/setStandBy', false)
-
-        }, 2000);
-
+    watch([strike, turn, game, acumulated, players], ([strike, turn, game, acumulated, players]) => {
+      if (!players.length) {
+        replace({ path: '/register' })
         return
       }
+      const checkGameScores = acumulated ? acumulated.map(score => score.score.length) : []
 
-      if (game < 10) {
-        if (turn === 3) {
-          dispatch('game/setStandBy', true)
-          dispatch('game/setScore', currentPlayer.value.player)
-          // animation of change player
-          setTimeout(() => {
-            dispatch('game/setStandBy', false)
-            dispatch('game/resetBowls')
-            changePlayer(currentPlayer.value.player)
-          }, 2000);
-          return
-        }
+      const gamePlay = checkGameScores.every(score => score < 10)
+      const finish = checkGameScores.every(score => score === 10)
+
+      if (finish) {
+        dispatch('game/setGameOver', true)
+
+        const results = acumulated.map(player => {
+          const score = player.score.reduce((a, b) => (a > b ? a : b));
+
+          const dataPlayer = players.find(p => p.player === player.player);
+          dataPlayer.score = score;
+
+          return { player: dataPlayer };
+        });
+
+        winner.value = results.sort((a, b) => b.player.score - a.player.score)[0]?.player
       }
 
-      if (game === 10) {
+      if (gamePlay) {
+        if (strike) {
+          dispatchActions()
+          return
+        }
+
+        if (turn === 3) {
+          dispatchActions()
+          return
+        }
+      } else {
+        if (strike) {
+          dispatchActions()
+          return
+        }
         if (turn === 4) {
-          console.log('end player game')
+          dispatchActions()
           return
         }
       }
@@ -139,7 +188,12 @@ export default {
       half,
       scoreBoard,
       loading,
-      changePlayer
+      acumulated,
+      gameOver,
+      winner,
+      changePlayer,
+      restartGame,
+      exit
     }
   }
 }
@@ -151,15 +205,32 @@ export default {
     <div class="game-page" v-else>
       <h1>BOWLING 2D</h1>
       <CloseButton />
-      <Score :currentGame="0" :player="currentPlayer" :turn="currentPlayer.player" />
-      <PlayBoard :player="currentPlayer" :changePlayer="changePlayer" />
+      <h2 v-if="winner" class="credits">Congratulations!! {{ winner.name }} you won this game</h2>
+      <Score
+        :currentGame="0"
+        :player="currentPlayer"
+        :turn="currentPlayer.player"
+        :winner="winner"
+      />
+      <PlayBoard :player="currentPlayer" :changePlayer="changePlayer" v-if="!gameOver" />
       <Score
         :currentGame="0"
         :player="player"
         :turn="currentPlayer.player"
+        :winner="winner"
         v-for="(player, idx) in scoreBoard"
         :key="idx"
       />
+      <div class="restart">
+        <Button
+          label="Restart game"
+          :action="restartGame"
+          :disabled="false"
+          :loading="false"
+          bg="success"
+        />
+        <Button label="Exit" :action="exit" :disabled="false" :loading="false" bg="danger" />
+      </div>
     </div>
   </Container>
 </template>
@@ -171,6 +242,12 @@ export default {
   box-sizing: border-box
   margin: auto
   overflow-y: auto
+
+  .credits
+    text-align: center
+    text-transform: uppercase
+    font-size: 2.2rem
+    color: #386C65
 
   .close
     position: absolute
@@ -191,4 +268,10 @@ export default {
       height: 100%
       background: #000
       transform: rotate(90deg)
+
+  .restart
+    width: 100%
+    display: flex
+    justify-content: center
+    gap: 20px
 </style>

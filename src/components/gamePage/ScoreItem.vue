@@ -22,6 +22,10 @@ export default {
       type: Array,
       required: true
     },
+    win: {
+      type: Boolean,
+      required: true
+    },
   },
 
   setup(props) {
@@ -56,13 +60,13 @@ export default {
 </script>
 
 <template>
-  <table class="score-item" :class="index === 9 && 'last-item'">
+  <table class="score-item" :class="`${index === 9 ? 'last-item' : ''} ${win ? 'winner' : ''}`">
     <tr>
       <td colspan="3" v-text="index + 1"></td>
     </tr>
     <tr>
       <td>{{ number ? number[0] : '' }}</td>
-      <td class="scuare">{{ scuare ? scuare[1] : '-' }}</td>
+      <td class="scuare">{{ scuare ? scuare[0] : '-' }}</td>
       <td class="scuare" v-if="index === 9">{{ scuare[1] }}</td>
     </tr>
     <tr>
@@ -73,6 +77,7 @@ export default {
 
 <style lang="stylus" scoped>
 border= 0.5px solid #252525;
+border-win = 0.5px solid #eaeaea;
 
 .score-item
   width: 5rem
@@ -97,4 +102,18 @@ border= 0.5px solid #252525;
 
 .last-item
   border-right: border
+
+.winner
+  border: border-win
+
+  tr:first-of-type
+    border-bottom: border-win
+
+  tr
+    td
+      color: #eaeaea !important
+
+    .scuare
+      border-left: border-win
+      border-bottom: border-win
 </style>

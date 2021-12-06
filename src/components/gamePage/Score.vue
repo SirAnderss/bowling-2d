@@ -20,6 +20,9 @@ export default {
     turn: {
       type: Number,
       required: true
+    },
+    winner: {
+      type: Object,
     }
   },
 
@@ -29,6 +32,8 @@ export default {
     const currentTurn = computed(() => props.turn)
 
     const color = computed(() => props.player.color)
+
+    const winningPlayer = computed(() => props.winner)
 
     const scoreBoard = computed(() => {
       if (state.game.scoreBoard.length) {
@@ -51,16 +56,23 @@ export default {
       color,
       currentTurn,
       scoreBoard,
-      acumulated
+      acumulated,
+      winningPlayer
     }
   }
 }
 </script>
 
 <template>
-  <div class="score" :class="player.player !== currentTurn && 'disabled'">
+  <div
+    class="score"
+    :class="winningPlayer ? winningPlayer.player === acumulated.player && 'champion' : player.player !== currentTurn && 'disabled'"
+  >
     <h2>SCORE</h2>
-    <div class="player">
+    <div
+      class="player"
+      :class="winningPlayer ? winningPlayer.player === acumulated.player ? 'winner' : '' : ''"
+    >
       <span>{{ player.name }}</span>
     </div>
     <ScoreItem
@@ -69,6 +81,7 @@ export default {
       :score="scoreBoard ? scoreBoard.games[idx] : []"
       :total="acumulated ? acumulated.score[idx] : 0"
       :scoreBoard="scoreBoard ? scoreBoard.games : []"
+      :win="winningPlayer.player === acumulated.player"
       v-for="(item, idx) in [...Array(10)]"
       :key="idx"
     />
@@ -117,4 +130,17 @@ prop-color= v-bind(color)
 
     span
       filter: invert(0)
+
+.winner
+  background: transparent !important
+  color: #252525 !important
+
+  // span
+  //   filter: invert(100%) !important
+.champion
+  background: #386C65 !important
+  padding: 1rem 0
+  color: #fff !important
+  display: flex
+  justify-content: center
 </style>

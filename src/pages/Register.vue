@@ -9,6 +9,10 @@ export default {
   components: {
     Container,
     Form
+  },
+  mounted() {
+    this.$store.dispatch('game/clearAllStates')
+    this.$store.dispatch('player/clearAllStates')
   }
 }
 </script>

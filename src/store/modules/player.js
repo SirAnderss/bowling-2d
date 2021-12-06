@@ -14,6 +14,10 @@ const actions = {
 
   setCurrentPlayer({ commit }, player) {
     commit('SET_CURRENT_PLAYER', player)
+  },
+
+  clearAllStates({ commit }) {
+    commit('CLEAR_ALL_STATES')
   }
 }
 
@@ -29,6 +33,12 @@ const mutations = {
 
   SET_CURRENT_PLAYER(state, player) {
     state.player = player
+  },
+
+  CLEAR_ALL_STATES(state) {
+    state.players = []
+    state.scores = []
+    state.player = {}
   }
 }
 
