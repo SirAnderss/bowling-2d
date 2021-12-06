@@ -7,6 +7,7 @@ import Container from '../components/Container.vue'
 import CloseButton from '../components/gamePage/CloseButton.vue'
 import PlayBoard from '../components/gamePage/PlayBoard.vue'
 import Score from '../components/gamePage/Score.vue'
+import Loader from '../components/Loader.vue'
 import randomColor from '../resources/randomColor'
 
 const mockPlayers = [
@@ -47,7 +48,8 @@ export default {
     Score,
     CloseButton,
     PlayBoard,
-    Button
+    Button,
+    Loader
   },
 
   setup() {
@@ -193,7 +195,7 @@ export default {
 
 <template>
   <Container>
-    <div v-if="loading">Loadig...</div>
+    <Loader v-if="!loading" />
     <div class="game-page" v-else>
       <h1>BOWLING 2D</h1>
       <CloseButton />
