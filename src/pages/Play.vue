@@ -8,38 +8,6 @@ import CloseButton from '../components/gamePage/CloseButton.vue'
 import PlayBoard from '../components/gamePage/PlayBoard.vue'
 import Score from '../components/gamePage/Score.vue'
 import Loader from '../components/Loader.vue'
-import randomColor from '../resources/randomColor'
-
-const mockPlayers = [
-  {
-    name: 'fulano',
-    score: 0,
-    player: 1,
-    id: 'qwerqwerqwe',
-    color: randomColor()
-  },
-  {
-    name: 'nombre',
-    score: 0,
-    player: 2,
-    id: 'asdfasdfg',
-    color: randomColor()
-  }
-  // {
-  //   name: 'fulanox',
-  //   score: 0,
-  //   player: 3,
-  //   id: 'yuioyuioyui',
-  //   color: randomColor()
-  // },
-  // {
-  //   name: 'nombre',
-  //   score: 0,
-  //   player: 4,
-  //   id: 'hjkljlhjklhjk',
-  //   color: randomColor()
-  // }
-]
 
 export default {
   name: 'PlayPage',
@@ -68,10 +36,14 @@ export default {
       return null
     })
     const gameOver = computed(() => state.game.gameOver)
+    const standBy = computed(() => state.game.standBy)
     const loading = ref(true)
     const winner = ref(null)
 
     const currentPlayer = computed(() => state.player.player)
+    const nextPlayer = computed(() => players.value.filter(
+      player => player.player !== currentPlayer.value.player
+    )[0] || null)
 
     const half = computed(() => Math.floor(players.value.length / 2))
 
@@ -105,7 +77,7 @@ export default {
         dispatch('game/setStrike', false)
         dispatch('game/resetBowls')
         changePlayer(currentPlayer.value.player)
-      }, 2000);
+      }, 2500);
     }
 
     const restartGame = () => {
@@ -178,10 +150,12 @@ export default {
 
     return {
       currentPlayer,
+      nextPlayer,
       players,
       half,
       scoreBoard,
       loading,
+      standBy,
       acumulated,
       gameOver,
       winner,
@@ -197,6 +171,17 @@ export default {
   <Container>
     <Loader v-if="loading" />
     <div class="game-page" v-else>
+      <transition name="fade">
+        <div class="next-turn" v-if="nextPlayer && standBy">
+          <div class="next-trun-cover"></div>
+          <div class="next-turn-text">
+            <span>
+              Next turn
+              {{ nextPlayer.name }}
+            </span>
+          </div>
+        </div>
+      </transition>
       <h1>BOWLING 2D</h1>
       <CloseButton />
       <h2 v-if="winner" class="credits">Congratulations!! {{ winner.name }} you won this game</h2>
@@ -268,4 +253,40 @@ export default {
     display: flex
     justify-content: center
     gap: 20px
+
+  .next-turn
+    position: absolute
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
+    width: 40%
+    height: 40%
+    display: grid
+    place-items: center
+    z-index: 1
+
+    .next-trun-cover
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      height: 100%
+      background: #cacaca
+      opacity: 0.7
+      z-index: -1
+
+    .next-turn-text
+      color: #252525
+      font-weight: bold
+      letter-spacing: 0.1rem
+      font-size: 2rem
+
+.fade-enter-active,
+.fade-leave-active
+  transition: opacity 0.5s ease;
+
+.fade-enter-from,
+.fade-leave-to
+  opacity: 0;
+
 </style>
