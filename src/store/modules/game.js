@@ -1,11 +1,12 @@
 import dropBowlsFromArray from '../../resources/dropBowlsFromArray'
+import GameScore from '../../resources/GameScore'
 import probability from '../../resources/probability'
 
 const SHUFFLE_BOWLS = {
   1: [9],
-  2: [5, 7, 8, 9],
-  3: [...Array(10).keys()].filter(i => i > 1),
-  4: [3, 6, 7, 8],
+  2: [7, 8, 9],
+  3: [...Array(10).keys()].filter(i => i > 3),
+  4: [6, 7, 8],
   5: [6]
 }
 
@@ -16,22 +17,9 @@ const state = () => {
   return {
     strike: false,
     bowls: [...Array(10).keys()],
-    scoreBoard: [
-      {
-        player: 1,
-        games: [[3, 7], [7, 1], [10], [4, 6]]
-      },
-      {
-        player: 2,
-        games: [
-          [3, 5],
-          [7, 3],
-          [8, 2],
-          [6, 3]
-        ]
-      }
-    ],
-    tempGameScores: {},
+    scoreBoard: [],
+    acumulatedScore: [],
+    tempGameScores: [],
     turn: 1,
     standBy: false,
     game: 1
@@ -84,12 +72,14 @@ const actions = {
     } else if (between(position, 60, 145)) {
       if (state.turn === 1) {
         // This spaces is mor probabli to get a strike, I'm calculate a probability before to shuffle bowls, if probability it's true, the player gets a strike as long as the turn is the first
-        const checkStrike = probability(0.55)
+        const checkStrike = probability(0.15)
 
         if (checkStrike) {
           tempBowls = []
           commit('SET_TURN', state.turn + 1)
           commit('SET_STRIKE', true)
+        } else {
+          tempBowls = dropBowlsFromArray(SHUFFLE_BOWLS[3], state.bowls, 0)
         }
       } else {
         tempBowls = dropBowlsFromArray(SHUFFLE_BOWLS[3], state.bowls, 0)
@@ -125,14 +115,36 @@ const actions = {
     const playerScore = state.scoreBoard.find(el => el.player === player)
 
     if (playerScore) {
+      const oGame = new GameScore(playerScore.games.flat())
+
+      oGame.calcScore()
+
+      const scoreByFrames = oGame.scoreByFrames
+
       commit('UPDATE_SCORE_BOARD', {
         player,
-        games: [state.tempGameScores]
+        games: state.tempGameScores
+      })
+
+      commit('UPDATE_ACC_SCORE', {
+        player,
+        score: scoreByFrames
       })
     } else {
+      const oGame = new GameScore(state.tempGameScores)
+
+      oGame.calcScore()
+
+      const scoreByFrames = oGame.scoreByFrames
+
       commit('SET_NEW_SCORE_BOARD', {
         player,
-        games: [state.tempGameScores]
+        games: state.tempGameScores
+      })
+
+      commit('SET_NEW_ACC_SCORE', {
+        player,
+        score: scoreByFrames
       })
     }
   }
@@ -180,8 +192,24 @@ const mutations = {
 
     const playerScore = state.scoreBoard.find(el => el.player === player)
     playerScore.games.push(games)
+  },
 
-    state.scoreBoard = [...state.scoreBoard]
+  SET_NEW_ACC_SCORE(state, value) {
+    const { player, score } = value
+
+    const playerScore = {
+      player,
+      score: score
+    }
+
+    state.acumulatedScore.push(playerScore)
+  },
+
+  UPDATE_ACC_SCORE(state, value) {
+    const { player, score } = value
+
+    const playerScore = state.acumulatedScore.find(el => el.player === player)
+    playerScore.score = score
   },
 
   SET_STAND_BY(state, value) {

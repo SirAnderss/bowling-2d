@@ -10,7 +10,6 @@
  * @returns {string} string
  * @example invertHex(#252525) // => '#DADADA'
  */
-
 export default function invertHex(hex) {
   if (!hex.length) return '#fff'
 

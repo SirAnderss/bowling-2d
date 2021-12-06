@@ -1,5 +1,5 @@
 <script>
-import { computed } from 'vue'
+import { computed } from 'vue';
 
 export default {
   name: 'ScoreItem',
@@ -12,9 +12,11 @@ export default {
       type: Number,
       required: true
     },
+    total: {
+      type: Number,
+    },
     score: {
       type: [Array, Number],
-      required: true
     },
     scoreBoard: {
       type: Array,
@@ -23,27 +25,18 @@ export default {
   },
 
   setup(props) {
-    const scoreBoard = computed(() => {
-      if (props.scoreBoard) {
-
-        return props.scoreBoard.slice(0, props.index + 1)
-      }
-
-      return null
-    })
-
     const number = computed(() => {
-      const score = props.score
+      const score = props.score ? props.score : [];
 
       if (score.length === 1) {
         return ''
       }
 
-      return score[0]
+      return score
     })
 
     const scuare = computed(() => {
-      const score = props.score
+      const score = props.score ? props.score : []
 
       if (score.length === 1) {
         return 'X'
@@ -53,47 +46,11 @@ export default {
         return '/'
       }
 
-      return score[1]
+      return score
     })
 
-    const total = computed(() => {
-      if (scoreBoard.value) {
-        let total = 0;
 
-        for (let i = 0; i < scoreBoard.value.length; i++) {
-          if (scoreBoard.value[i].length === 1) {
-
-            if (scoreBoard.value[i + 1]) {
-              total += scoreBoard.value[i][0] + scoreBoard.value[i + 1][0] + scoreBoard.value[i + 1][1];
-            } else {
-              total += scoreBoard.value[i][0]
-            }
-
-            continue;
-          }
-
-          const sum = scoreBoard.value[i][0] + scoreBoard.value[i][1];
-
-          if (sum === 10) {
-            if (scoreBoard.value[i + 1]) {
-              total += sum + scoreBoard.value[i + 1][0];
-            } else {
-              total += sum;
-            }
-
-            continue;
-          }
-
-          total += sum;
-        }
-
-        return total
-      }
-
-      return null
-    })
-
-    return { number, scuare, total }
+    return { number, scuare }
   }
 }
 </script>
@@ -104,13 +61,12 @@ export default {
       <td colspan="3" v-text="index + 1"></td>
     </tr>
     <tr>
-      <td>{{ number }}</td>
-      <td class="scuare">{{ scuare }}</td>
-      <td class="scuare" v-if="index === 9"></td>
+      <td>{{ number ? number[0] : '' }}</td>
+      <td class="scuare">{{ scuare ? scuare[1] : '-' }}</td>
+      <td class="scuare" v-if="index === 9">{{ scuare[1] }}</td>
     </tr>
     <tr>
-      <td colspan="3" v-if="!scuare"></td>
-      <td colspan="3" v-else>{{ total || '' }}</td>
+      <td colspan="3">{{ total ? total : '' }}</td>
     </tr>
   </table>
 </template>

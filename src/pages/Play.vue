@@ -52,7 +52,7 @@ export default {
     const { dispatch, state } = useStore()
     const { replace } = useRouter()
 
-    const players = computed(() => mockPlayers)
+    const players = computed(() => mockPlayers) // state.player.players
     const turn = computed(() => state.game.turn)
     const game = computed(() => state.game.game)
     const strike = computed(() => state.game.strike)

@@ -27,14 +27,31 @@ export default {
     const { state } = useStore()
 
     const currentTurn = computed(() => props.turn)
+
     const color = computed(() => props.player.color)
 
-    const scoreBoard = computed(() => state.game.scoreBoard.find(score => score.player === props.player.player))
+    const scoreBoard = computed(() => {
+      if (state.game.scoreBoard.length) {
+        return state.game.scoreBoard.find(score => score.player === props.player.player)
+      }
+
+      return null
+    })
+
+    const acumulated = computed(() => {
+      if (state.game.acumulatedScore.length) {
+        return state.game.acumulatedScore.find(acc => acc.player === props.player.player)
+      }
+
+      return null
+    })
+
 
     return {
       color,
       currentTurn,
-      scoreBoard
+      scoreBoard,
+      acumulated
     }
   }
 }
@@ -49,8 +66,9 @@ export default {
     <ScoreItem
       :game="currentGame"
       :index="idx"
-      :score="scoreBoard.games[idx] || []"
-      :scoreBoard="scoreBoard.games"
+      :score="scoreBoard ? scoreBoard.games[idx] : []"
+      :total="acumulated ? acumulated.score[idx] : 0"
+      :scoreBoard="scoreBoard ? scoreBoard.games : []"
       v-for="(item, idx) in [...Array(10)]"
       :key="idx"
     />
