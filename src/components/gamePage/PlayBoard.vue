@@ -69,7 +69,7 @@ export default {
       >
         <VerticalArrow :disabled="disabled" />
         <img
-          :src="'../../assets/images/strike.gif'"
+          src="https://i.postimg.cc/ZYVr2cy7/strike.gif"
           class="strike"
           alt="Strike"
           width="240"
