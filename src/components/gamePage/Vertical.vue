@@ -19,7 +19,7 @@ export default {
     let position = -20
     let adding = true
     let interval
-    const timer = 100
+    const timer = 10
 
     const { state, dispatch } = useStore()
 

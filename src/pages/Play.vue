@@ -195,7 +195,7 @@ export default {
 
 <template>
   <Container>
-    <Loader v-if="!loading" />
+    <Loader v-if="loading" />
     <div class="game-page" v-else>
       <h1>BOWLING 2D</h1>
       <CloseButton />
