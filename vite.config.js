@@ -4,5 +4,5 @@ import { defineConfig } from 'vite'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  base: 'https://siranderss.github.io/bowling-2d/'
+  base: '/bowling-2d/'
 })
